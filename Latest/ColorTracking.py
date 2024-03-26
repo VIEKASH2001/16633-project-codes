@@ -5,7 +5,7 @@ sys.path.append('/home/pi/MasterPi/')
 import cv2
 import time
 import signal
-import Camera
+import Camera_depth_only
 import argparse
 import threading
 import yaml_handle

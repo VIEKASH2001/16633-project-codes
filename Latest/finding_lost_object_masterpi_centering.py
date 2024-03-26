@@ -76,7 +76,6 @@ while True:
     for r in results:
         boxes = r.boxes
 
-        # Filter boxes by target class and confidence level > 0.5
         filtered_boxes = [box for box in boxes if int(box.cls[0]) == target_class_index and math.ceil((box.conf[0]*100))/100 > 0.5]
 
         for box in filtered_boxes:
@@ -89,15 +88,8 @@ while True:
             center_y = int(map(center_y, 0, size[1], 0, img_h))
             radius = int(map(radius, 0, size[0], 0, img_w))
             object_center = (center_x, center_y)
-            # cv2.circle(img, object_center, radius=3, color=(255, 0, 0), thickness=-1)
-            # cv2.line(img, frame_center, object_center, (255, 0, 255), 2, cv2.LINE_AA, 0)
-            # x_disp = center_x - frame_center[0]
-            # y_disp = center_y - frame_center[1]
             disp_text = f"X: {center_x}, Y: {center_y}"
             cv2.putText(img, disp_text, object_center, cv2.FONT_HERSHEY_SIMPLEX, 0.7, (150, 160, 160), 2)
-
-
-            # In your object detection loop, after calculating center_x and center_y
             data = f"{center_x},{center_y}"
             client_socket.sendall(data.encode())
 
