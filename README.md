@@ -7,7 +7,7 @@ This project is designed to facilitate the tracking and locating of lost objects
 ### Folder Structure
 
 - **Latest**: Contains the most recent code for the project, including files for locating lost objects and sending coordinates to Raspberry Pi.
-- **v1, v2**: Previous versions of the project, provided for reference but not actively used in the current development phase.
+- **v1, v2, ...**: Previous versions of the project, provided for reference but not actively used in the current development phase.
 
 ## Instructions
 
