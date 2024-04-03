@@ -13,9 +13,9 @@ if sys.version_info.major == 2:
     print('Please run this program with python3!')
     sys.exit(0)
 
-# change mode for different streams - 0 for RGB, 1 for Depth
+# Change mode for different streams - 0 for RGB, 1 for Depth
 class Camera:
-    def __init__(self, resolution=(640, 480), mode=0):
+    def __init__(self, resolution=(640, 480), mode=1):  # Changed mode default to 1 for Depth
         """
         Initialize the camera.
         
@@ -44,10 +44,8 @@ class Camera:
 
     def camera_open(self):
         try:
-            # Enable both depth and RGB streams if mode is set to capture depth images
             if self.mode == 1:
                 self.config.enable_stream(rs.stream.depth, self.width, self.height, rs.format.z16, 30)
-            # Always enable RGB stream
             self.config.enable_stream(rs.stream.color, self.width, self.height, rs.format.bgr8, 30)
             
             self.pipeline.start(self.config)
@@ -68,18 +66,17 @@ class Camera:
             try:
                 if self.opened:
                     frames = self.pipeline.wait_for_frames()
-                    if self.mode == 0:  # RGB mode
-                        color_frame = frames.get_color_frame()
-                        if not color_frame:
-                            continue
-                        self.frame = np.asanyarray(color_frame.get_data())
-                    else:  # Depth mode
+                    if self.mode == 1:  # Depth mode
                         depth_frame = frames.get_depth_frame()
                         if not depth_frame:
                             continue
                         depth_image = np.asanyarray(depth_frame.get_data())
-                        depth_colormap = cv2.applyColorMap(cv2.convertScaleAbs(depth_image, alpha=0.03), cv2.COLORMAP_JET)
-                        self.frame = depth_colormap
+                        self.frame = depth_image
+                    else:  # RGB mode
+                        color_frame = frames.get_color_frame()
+                        if not color_frame:
+                            continue
+                        self.frame = np.asanyarray(color_frame.get_data())
                 else:
                     time.sleep(0.01)
             except Exception as e:
@@ -87,14 +84,15 @@ class Camera:
                 time.sleep(0.01)
 
 if __name__ == '__main__':
-    # Initialize camera mode: 0 for RGB, 1 for Depth
-    mode = 0  # Change this to 1 for depth images
+    mode = 1  # Set this to 1 for depth images explicitly
     my_camera = Camera(mode=mode)
     my_camera.camera_open()
     while True:
         img = my_camera.frame
         if img is not None:
-            cv2.imshow('Image', img)
+            # If you want to visualize the depth image, you'll need to convert it to a format suitable for display
+            depth_colormap = cv2.applyColorMap(cv2.convertScaleAbs(img, alpha=0.03), cv2.COLORMAP_JET)
+            cv2.imshow('Depth Image', depth_colormap)  # Changed window name to 'Depth Image'
             key = cv2.waitKey(1)
             if key == 27:  # Escape key
                 break
